@@ -33,11 +33,12 @@ export default function Home() {
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-white">PRED-MAINT TERMINAL</h1>
             <div className="flex items-center gap-2">
-              <p className="text-xs text-gray-400">NASA IMS Dataset //</p>
+              <p className="text-xs text-gray-500 mr-2">DATA STREAM //</p>
               <select
                 value={selectedBearing}
                 onChange={handleBearingChange}
-                className="bg-transparent text-xs text-blue-400 border-none outline-none cursor-pointer hover:text-blue-300 uppercase font-mono p-0"
+                className="bg-gray-900 border border-gray-700 text-xs text-white rounded px-3 py-1 outline-none cursor-pointer hover:border-blue-500 transition-colors uppercase font-mono shadow-sm appearance-none pr-8 relative z-10"
+                style={{ backgroundImage: 'none' }}
               >
                 <optgroup label="Test Set No. 1">
                   <option value="Set 1 - Bearing 1">Set 1 - Bearing 1</option>
