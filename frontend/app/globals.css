@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #0b0b0b;
+  --foreground: #ededed;
+  --neon-green: #00ff41;
+  --neon-red: #ff3131;
+  --grid-line: #1a1a1a;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  overflow: hidden; /* App-like feel */
+}
+
+@layer utilities {
+    .text-crypto-up {
+        color: var(--neon-green);
+        text-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+    }
+    .text-crypto-down {
+        color: var(--neon-red);
+        text-shadow: 0 0 10px rgba(255, 49, 49, 0.3);
+    }
+    .bg-glass {
+        background: rgba(22, 22, 22, 0.8);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+}
