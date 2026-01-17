@@ -37,10 +37,12 @@ export const ChartComponent = () => {
         const initTimer = setTimeout(() => {
             if (!chartContainerRef.current) return;
 
-            // Debug: Check dimensions
-            const width = chartContainerRef.current.clientWidth || 800;
+            // Initial Dimensions
+            const rect = chartContainerRef.current.getBoundingClientRect();
+            const width = rect.width || 800;
             const height = 400;
-            setDebugLog(prev => [`Chart Init: ${width}px x ${height}px`, ...prev]);
+
+            setDebugLog(prev => [`Chart Init: ${Math.floor(width)}px x ${height}px`, ...prev]);
 
             // Initialize Chart
             const chart = createChart(chartContainerRef.current, {
@@ -89,11 +91,25 @@ export const ChartComponent = () => {
             // Resize Observer to handle responsive layout
             const resizeObserver = new ResizeObserver(entries => {
                 if (entries.length === 0 || !entries[0].target) return;
-                const newRect = entries[0].contentRect;
-                chart.applyOptions({ width: newRect.width, height: newRect.height });
+
+                // Use getBoundingClientRect for more accuracy with sub-pixel rendering
+                const newRect = entries[0].target.getBoundingClientRect();
+
+                if (newRect.width > 0 && newRect.height > 0) {
+                    chart.applyOptions({ width: newRect.width, height: newRect.height });
+                }
             });
 
             resizeObserver.observe(chartContainerRef.current);
+
+            // Backup Window Resize Listener (Double safety)
+            const handleWindowResize = () => {
+                if (chartContainerRef.current) {
+                    const newRect = chartContainerRef.current.getBoundingClientRect();
+                    chart.applyOptions({ width: newRect.width, height: 400 });
+                }
+            };
+            window.addEventListener('resize', handleWindowResize);
 
             // WebSocket Connection
             const ws = new WebSocket('ws://localhost:8000/ws');
@@ -157,6 +173,7 @@ export const ChartComponent = () => {
 
             // Cleanup
             return () => {
+                window.removeEventListener('resize', handleWindowResize);
                 resizeObserver.disconnect();
                 chart.remove();
                 ws.close();
@@ -174,9 +191,9 @@ export const ChartComponent = () => {
     }
 
     return (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 w-full">
             {/* Ticker Header */}
-            <div className="grid grid-cols-4 gap-4 p-4 bg-glass rounded-lg">
+            <div className="grid grid-cols-4 gap-4 p-4 bg-glass rounded-lg w-full">
                 <div>
                     <p className="text-gray-500 text-xs uppercase">Symbol</p>
                     <p className="text-xl font-bold text-white">BRG-001</p>
@@ -206,14 +223,14 @@ export const ChartComponent = () => {
 
             {/* Chart */}
             <div className="relative w-full h-[400px] border border-gray-800 rounded-lg overflow-hidden bg-black">
-                <div ref={chartContainerRef} className="absolute inset-0" />
+                <div ref={chartContainerRef} className="absolute inset-0 w-full h-full" />
                 <div className="absolute top-2 left-2 text-xs text-gray-500 pointer-events-none">
                     Real-time (1s Candles)
                 </div>
             </div>
 
             {/* Debug Console */}
-            <div className="p-2 bg-gray-900 rounded text-[10px] font-mono text-gray-400 h-24 overflow-y-auto">
+            <div className="p-2 bg-gray-900 rounded text-[10px] font-mono text-gray-400 h-24 overflow-y-auto w-full">
                 <p className="font-bold text-gray-300 border-b border-gray-700 mb-1">DEBUG LOG (Show this to support)</p>
                 <div className="flex flex-col-reverse">
                     {debugLog.map((log, i) => (
