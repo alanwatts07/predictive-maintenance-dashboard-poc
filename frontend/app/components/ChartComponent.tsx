@@ -212,11 +212,10 @@ export const ChartComponent = () => {
                 </div>
                 <div>
                     <p className="text-gray-500 text-xs uppercase">Fault Prob.</p>
-                    <div className="w-full bg-gray-800 rounded-full h-2.5 mt-2">
-                        <div
-                            className="bg-red-600 h-2.5 rounded-full transition-all duration-500"
-                            style={{ width: `${(lastData?.degradation || 0) * 100}%` }}
-                        ></div>
+                    <div className="mt-1">
+                        <p className={`text-2xl font-mono font-bold ${getStateColor(lastData?.state || "HEALTHY")}`}>
+                            {((lastData?.degradation || 0) * 100).toFixed(1)}%
+                        </p>
                     </div>
                 </div>
             </div>
