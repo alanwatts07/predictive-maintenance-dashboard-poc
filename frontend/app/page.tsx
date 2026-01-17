@@ -15,7 +15,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen p-8 flex flex-col gap-6 bg-[#050505]">
+    <main className="min-h-screen p-8 flex flex-col gap-6 bg-[#050505] max-w-[1800px] mx-auto">
       {/* Top Bar */}
       <header className="flex justify-between items-center border-b border-gray-800 pb-4">
         <div className="flex items-center gap-3">

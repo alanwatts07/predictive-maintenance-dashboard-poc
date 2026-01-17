@@ -40,7 +40,7 @@ export const ChartComponent = () => {
             // Initial Dimensions
             const rect = chartContainerRef.current.getBoundingClientRect();
             const width = rect.width || 800;
-            const height = 400;
+            const height = 500;
 
             setDebugLog(prev => [`Chart Init: ${Math.floor(width)}px x ${height}px`, ...prev]);
 
@@ -60,7 +60,7 @@ export const ChartComponent = () => {
                     timeVisible: true,
                     secondsVisible: true,
                     rightOffset: 10,
-                    barSpacing: 10,
+                    barSpacing: 28, // Zoomed in to fill space with few candles
                 },
                 crosshair: {
                     mode: 0,
@@ -106,7 +106,7 @@ export const ChartComponent = () => {
             const handleWindowResize = () => {
                 if (chartContainerRef.current) {
                     const newRect = chartContainerRef.current.getBoundingClientRect();
-                    chart.applyOptions({ width: newRect.width, height: 400 });
+                    chart.applyOptions({ width: newRect.width, height: 500 });
                 }
             };
             window.addEventListener('resize', handleWindowResize);
@@ -222,7 +222,7 @@ export const ChartComponent = () => {
             </div>
 
             {/* Chart */}
-            <div className="relative w-full h-[400px] border border-gray-800 rounded-lg overflow-hidden bg-black">
+            <div className="relative w-full h-[500px] border border-gray-800 rounded-lg overflow-hidden bg-black">
                 <div ref={chartContainerRef} className="absolute inset-0 w-full h-full" />
                 <div className="absolute top-2 left-2 text-xs text-gray-500 pointer-events-none">
                     Real-time (1s Candles)
