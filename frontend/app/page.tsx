@@ -40,23 +40,23 @@ export default function Home() {
                 className="bg-gray-900 border border-gray-700 text-xs text-white rounded px-3 py-1 outline-none cursor-pointer hover:border-blue-500 transition-colors uppercase font-mono shadow-sm appearance-none pr-8 relative z-10"
                 style={{ backgroundImage: 'none' }}
               >
-                <optgroup label="Test Set No. 1">
-                  <option value="Set 1 - Bearing 1">Set 1 - Bearing 1</option>
-                  <option value="Set 1 - Bearing 2">Set 1 - Bearing 2</option>
-                  <option value="Set 1 - Bearing 3">Set 1 - Bearing 3</option>
-                  <option value="Set 1 - Bearing 4">Set 1 - Bearing 4</option>
+                <optgroup label="Test Set No. 1 (Rexnord)">
+                  <option value="Set 1 - Bearing 1 (Rexnord ZA-2115)">Set 1 - Bearing 1 (Rexnord ZA-2115)</option>
+                  <option value="Set 1 - Bearing 2 (Rexnord ZA-2115)">Set 1 - Bearing 2 (Rexnord ZA-2115)</option>
+                  <option value="Set 1 - Bearing 3 (Rexnord ZA-2115)">Set 1 - Bearing 3 (Rexnord ZA-2115)</option>
+                  <option value="Set 1 - Bearing 4 (Rexnord ZA-2115)">Set 1 - Bearing 4 (Rexnord ZA-2115)</option>
                 </optgroup>
-                <optgroup label="Test Set No. 2">
-                  <option value="Set 2 - Bearing 1">Set 2 - Bearing 1</option>
-                  <option value="Set 2 - Bearing 2">Set 2 - Bearing 2</option>
-                  <option value="Set 2 - Bearing 3">Set 2 - Bearing 3</option>
-                  <option value="Set 2 - Bearing 4">Set 2 - Bearing 4</option>
+                <optgroup label="Test Set No. 2 (SKF)">
+                  <option value="Set 2 - Bearing 1 (SKF 6205-2RS)">Set 2 - Bearing 1 (SKF 6205-2RS)</option>
+                  <option value="Set 2 - Bearing 2 (SKF 6205-2RS)">Set 2 - Bearing 2 (SKF 6205-2RS)</option>
+                  <option value="Set 2 - Bearing 3 (SKF 6205-2RS)">Set 2 - Bearing 3 (SKF 6205-2RS)</option>
+                  <option value="Set 2 - Bearing 4 (SKF 6205-2RS)">Set 2 - Bearing 4 (SKF 6205-2RS)</option>
                 </optgroup>
-                <optgroup label="Test Set No. 3">
-                  <option value="Set 3 - Bearing 1">Set 3 - Bearing 1</option>
-                  <option value="Set 3 - Bearing 2">Set 3 - Bearing 2</option>
-                  <option value="Set 3 - Bearing 3">Set 3 - Bearing 3</option>
-                  <option value="Set 3 - Bearing 4">Set 3 - Bearing 4</option>
+                <optgroup label="Test Set No. 3 (Timken)">
+                  <option value="Set 3 - Bearing 1 (Timken Gen2)">Set 3 - Bearing 1 (Timken Gen2)</option>
+                  <option value="Set 3 - Bearing 2 (Timken Gen2)">Set 3 - Bearing 2 (Timken Gen2)</option>
+                  <option value="Set 3 - Bearing 3 (Timken Gen2)">Set 3 - Bearing 3 (Timken Gen2)</option>
+                  <option value="Set 3 - Bearing 4 (Timken Gen2)">Set 3 - Bearing 4 (Timken Gen2)</option>
                 </optgroup>
               </select>
             </div>
@@ -74,7 +74,7 @@ export default function Home() {
 
       {/* Chart Section - Full Width */}
       <div className="w-full">
-        <ChartComponent />
+        <ChartComponent key={selectedBearing} />
       </div>
 
       {/* Bottom Grid: Status | Controls | Logistics */}
@@ -141,7 +141,7 @@ export default function Home() {
           <div className="space-y-4 font-mono text-xs">
             <div className="flex justify-between border-b border-gray-800 pb-2">
               <span className="text-gray-500">Bearing Type</span>
-              <span className="text-white text-[10px]">{selectedBearing.split('(')[0]}</span>
+              <span className="text-white text-[10px]">{selectedBearing.includes('(') ? selectedBearing.split('(')[1].replace(')', '') : 'GENERIC'}</span>
             </div>
             <div className="flex justify-between border-b border-gray-800 pb-2">
               <span className="text-gray-500">Sampling Rate</span>
