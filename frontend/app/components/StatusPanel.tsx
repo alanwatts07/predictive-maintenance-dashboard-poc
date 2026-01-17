@@ -10,7 +10,7 @@ interface VibrationData {
     close: number;
 }
 
-export const StatusPanel = () => {
+export const StatusPanel = ({ bearingName }: { bearingName: string }) => {
     const [status, setStatus] = useState<VibrationData | null>(null);
 
     useEffect(() => {
@@ -47,7 +47,7 @@ export const StatusPanel = () => {
                 {status?.state === 'CRITICAL' && <AlertCircle className="w-8 h-8" />}
 
                 <div>
-                    <h2 className="text-sm font-bold opacity-70 uppercase tracking-widest">System Status</h2>
+                    <h2 className="text-[10px] font-bold opacity-70 uppercase tracking-widest text-blue-300 mb-1">MONITORING: {bearingName}</h2>
                     <div className="text-2xl font-black tracking-tighter">{status?.state || "CONNECTING"}</div>
                 </div>
             </div>

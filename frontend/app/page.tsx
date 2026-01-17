@@ -3,8 +3,10 @@
 import { ChartComponent } from "./components/ChartComponent";
 import { StatusPanel } from "./components/StatusPanel";
 import { Activity, AlertTriangle, CheckCircle, Zap } from "lucide-react";
+import { useState } from "react";
 
 export default function Home() {
+  const [selectedBearing, setSelectedBearing] = useState("Set 2 - Bearing 1 (Rexnord ZA-2115)");
 
   const setControl = async (state: string) => {
     try {
@@ -12,6 +14,12 @@ export default function Home() {
     } catch (e) {
       console.error("Failed to set control", e);
     }
+  };
+
+  const handleBearingChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedBearing(e.target.value);
+    // Reset simulation to simulate "connecting" to a new stream
+    setControl('HEALTHY');
   };
 
   return (
@@ -24,7 +32,33 @@ export default function Home() {
           </div>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-white">PRED-MAINT TERMINAL</h1>
-            <p className="text-xs text-gray-400">NASA Bearing Dataset // Synthetic Stream</p>
+            <div className="flex items-center gap-2">
+              <p className="text-xs text-gray-400">NASA IMS Dataset //</p>
+              <select
+                value={selectedBearing}
+                onChange={handleBearingChange}
+                className="bg-transparent text-xs text-blue-400 border-none outline-none cursor-pointer hover:text-blue-300 uppercase font-mono p-0"
+              >
+                <optgroup label="Test Set No. 1">
+                  <option value="Set 1 - Bearing 1">Set 1 - Bearing 1</option>
+                  <option value="Set 1 - Bearing 2">Set 1 - Bearing 2</option>
+                  <option value="Set 1 - Bearing 3">Set 1 - Bearing 3</option>
+                  <option value="Set 1 - Bearing 4">Set 1 - Bearing 4</option>
+                </optgroup>
+                <optgroup label="Test Set No. 2">
+                  <option value="Set 2 - Bearing 1">Set 2 - Bearing 1</option>
+                  <option value="Set 2 - Bearing 2">Set 2 - Bearing 2</option>
+                  <option value="Set 2 - Bearing 3">Set 2 - Bearing 3</option>
+                  <option value="Set 2 - Bearing 4">Set 2 - Bearing 4</option>
+                </optgroup>
+                <optgroup label="Test Set No. 3">
+                  <option value="Set 3 - Bearing 1">Set 3 - Bearing 1</option>
+                  <option value="Set 3 - Bearing 2">Set 3 - Bearing 2</option>
+                  <option value="Set 3 - Bearing 3">Set 3 - Bearing 3</option>
+                  <option value="Set 3 - Bearing 4">Set 3 - Bearing 4</option>
+                </optgroup>
+              </select>
+            </div>
           </div>
         </div>
         <div className="flex gap-4">
@@ -46,7 +80,7 @@ export default function Home() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
         {/* Col 1: Status Panel */}
-        <StatusPanel />
+        <StatusPanel bearingName={selectedBearing} />
 
         {/* Col 2: Controls */}
         <div className="bg-glass p-6 rounded-lg border border-gray-800">
@@ -106,7 +140,7 @@ export default function Home() {
           <div className="space-y-4 font-mono text-xs">
             <div className="flex justify-between border-b border-gray-800 pb-2">
               <span className="text-gray-500">Bearing Type</span>
-              <span className="text-white">Rexnord ZA-2115</span>
+              <span className="text-white text-[10px]">{selectedBearing.split('(')[0]}</span>
             </div>
             <div className="flex justify-between border-b border-gray-800 pb-2">
               <span className="text-gray-500">Sampling Rate</span>
