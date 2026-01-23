@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Predictive Maintenance Terminal",
     description: "Real-time bearing health monitoring dashboard with predictive maintenance capabilities. Visualizes equipment degradation through vibration analysis.",
-    url: "https://frontend-rtetbxv9f-alanwatts07s-projects.vercel.app",
+    url: "https://frontend-two-ashy-yla6dtp7w4.vercel.app",
     siteName: "Predictive Maintenance Terminal",
     images: [
       {
