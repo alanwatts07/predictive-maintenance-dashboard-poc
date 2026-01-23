@@ -6,7 +6,7 @@ A real-time bearing health monitoring dashboard that visualizes equipment degrad
 
 ## Live Demo
 
-[View Live Demo](https://your-vercel-url.vercel.app)
+[View Live Demo](https://frontend-rtetbxv9f-alanwatts07s-projects.vercel.app)
 
 ## Features
 
