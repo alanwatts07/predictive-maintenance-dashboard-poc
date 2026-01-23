@@ -1,18 +1,36 @@
 'use client';
 
-import { ChartComponent } from "./components/ChartComponent";
+import { ChartComponent, SimulationState } from "./components/ChartComponent";
 import { StatusPanel } from "./components/StatusPanel";
 import { Activity, AlertTriangle, CheckCircle, Zap } from "lucide-react";
-import { useState } from "react";
+import { useState, useCallback, useRef } from "react";
+
+// Check if we have a backend URL configured
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || '';
+const USE_WEBSOCKET = BACKEND_URL.length > 0;
 
 export default function Home() {
-  const [selectedBearing, setSelectedBearing] = useState("Set 2 - Bearing 1 (Rexnord ZA-2115)");
+  const [selectedBearing, setSelectedBearing] = useState("Set 2 - Bearing 1 (SKF 6205-2RS)");
+  const setSimulationStateRef = useRef<((state: SimulationState) => void) | null>(null);
 
-  const setControl = async (state: string) => {
-    try {
-      await fetch(`http://localhost:8000/control/${state}`, { method: 'POST' });
-    } catch (e) {
-      console.error("Failed to set control", e);
+  // Handle state change callback from chart
+  const handleStateChange = useCallback((setState: (state: SimulationState) => void) => {
+    setSimulationStateRef.current = setState;
+  }, []);
+
+  const setControl = async (state: SimulationState) => {
+    if (USE_WEBSOCKET) {
+      // Backend mode - send to API
+      try {
+        await fetch(`${BACKEND_URL}/control/${state}`, { method: 'POST' });
+      } catch (e) {
+        console.error("Failed to set control", e);
+      }
+    } else {
+      // Demo mode - control locally
+      if (setSimulationStateRef.current) {
+        setSimulationStateRef.current(state);
+      }
     }
   };
 
@@ -74,7 +92,7 @@ export default function Home() {
 
       {/* Chart Section - Full Width */}
       <div className="w-full">
-        <ChartComponent key={selectedBearing} />
+        <ChartComponent key={selectedBearing} onStateChange={handleStateChange} />
       </div>
 
       {/* Bottom Grid: Status | Controls | Logistics */}
@@ -153,7 +171,7 @@ export default function Home() {
             </div>
             <div className="flex justify-between border-b border-gray-800 pb-2">
               <span className="text-gray-500">Protocol</span>
-              <span className="text-blue-400">MQTT over WSS</span>
+              <span className="text-blue-400">WebSocket / MQTT</span>
             </div>
           </div>
         </div>
