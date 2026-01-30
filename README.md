@@ -120,6 +120,55 @@ For production with real sensor data:
 | **Outer Race Failure** | Rapid degradation with shock spikes | Critical failure scenario |
 | **Demo Mode** | Automated progression through states | Presentation/demo |
 
+## ML Methodology
+
+### Training Data: NASA Bearing Dataset
+
+This project's degradation model is informed by the [NASA IMS Bearing Dataset](https://www.nasa.gov/content/prognostics-center-of-excellence-data-set-repository), a benchmark dataset for predictive maintenance research containing run-to-failure vibration data from accelerated bearing tests.
+
+**Dataset Characteristics:**
+- 4 Rexnord ZA-2115 bearings under constant load (6000 lbs) and speed (2000 RPM)
+- Vibration data sampled at 20 kHz, recorded in 1-second snapshots
+- Test run until bearing failure (~35 days of continuous operation)
+- Ground truth failure modes: inner race defect, roller element defect, outer race defect
+
+### Feature Engineering
+
+The simulation models key statistical features used in bearing health assessment:
+
+| Feature | Description | Failure Indicator |
+|---------|-------------|-------------------|
+| **RMS Amplitude** | Root mean square of vibration signal | Increases 2-5x before failure |
+| **Kurtosis** | Signal peakedness (shock detection) | Spikes indicate impact events |
+| **Crest Factor** | Peak-to-RMS ratio | Elevated during early-stage defects |
+| **Spectral Energy** | Frequency band power distribution | Shifts toward defect frequencies |
+
+### Degradation Model
+
+The current implementation uses a **physics-informed simulation** that replicates observed failure progression:
+
+```
+HEALTHY → DEGRADING → CRITICAL → FAILURE
+   │          │           │
+   └──────────┴───────────┴── RMS amplitude increases
+                              Volatility (kurtosis proxy) increases
+                              Shock events become more frequent
+```
+
+**State Transition Logic:**
+- **HEALTHY**: Baseline RMS (~0.5g), low volatility
+- **DEGRADING**: RMS drift (+0.01g/sec), increasing volatility
+- **CRITICAL**: Rapid RMS escalation (+0.05g/sec), shock spikes
+
+### Future: ML Model Integration
+
+For production deployment, the simulation can be replaced with trained models:
+
+- **LSTM/GRU Networks**: Sequence modeling for RUL (Remaining Useful Life) prediction
+- **1D-CNN**: Pattern recognition on raw vibration waveforms
+- **Isolation Forest**: Unsupervised anomaly detection for novel failure modes
+- **XGBoost Classifier**: State classification using engineered features
+
 ## Data Model
 
 Each data point follows OHLC (Open-High-Low-Close) format:
