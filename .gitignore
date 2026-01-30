@@ -32,3 +32,11 @@ npm-debug.log*
 # Testing
 coverage/
 .nyc_output/
+
+# ML Data (large files - regenerate with download_nasa_data.py)
+backend/ml/data/nasa_bearing.zip
+backend/ml/data/raw/
+backend/ml/data/processed/*.npy
+
+# Keep trained models (small, needed for inference)
+!backend/ml/models/

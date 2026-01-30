@@ -26,10 +26,15 @@ A real-time bearing health monitoring dashboard that visualizes equipment degrad
 - **Lightweight Charts** - High-performance financial charting library
 - **Lucide React** - Icon library
 
-### Backend (Optional)
+### Backend
 - **FastAPI** - Modern Python web framework
 - **WebSocket** - Real-time bidirectional communication
 - **NumPy/SciPy** - Scientific computing for signal processing
+
+### ML Pipeline
+- **XGBoost** - Gradient boosting classifier for health state prediction
+- **scikit-learn** - Feature scaling and model evaluation
+- **joblib** - Model serialization for production inference
 
 ## Quick Start
 
@@ -45,12 +50,19 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### Full Stack (With Backend)
+### Full Stack (With ML Backend)
 
-1. Start the backend:
+1. Install dependencies and train the model:
 ```bash
 cd backend
 pip install -r requirements.txt
+
+# Train the bearing health classifier
+python -m ml.train_model
+```
+
+2. Start the backend:
+```bash
 uvicorn app.main:app --reload
 ```
 

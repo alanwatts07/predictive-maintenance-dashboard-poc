@@ -1,0 +1,49 @@
+{
+  "trained_at": "2026-01-30T13:23:09.237912",
+  "metrics": {
+    "accuracy": 1.0,
+    "f1_macro": 1.0,
+    "f1_weighted": 1.0,
+    "confusion_matrix": [
+      [
+        100,
+        0,
+        0
+      ],
+      [
+        0,
+        100,
+        0
+      ],
+      [
+        0,
+        0,
+        100
+      ]
+    ],
+    "train_samples": 1200,
+    "test_samples": 300,
+    "feature_names": [
+      "rms",
+      "peak",
+      "crest_factor",
+      "kurtosis",
+      "skewness",
+      "std",
+      "clearance_factor",
+      "shape_factor",
+      "impulse_factor",
+      "spectral_centroid",
+      "spectral_spread",
+      "band_energy_low",
+      "band_energy_mid",
+      "band_energy_high"
+    ]
+  },
+  "model_type": "XGBClassifier",
+  "labels": [
+    "HEALTHY",
+    "DEGRADING",
+    "CRITICAL"
+  ]
+}
