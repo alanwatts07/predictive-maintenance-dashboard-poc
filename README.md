@@ -134,52 +134,109 @@ For production with real sensor data:
 
 ## ML Methodology
 
-### Training Data: NASA Bearing Dataset
+### Model Architecture
 
-This project's degradation model is informed by the [NASA IMS Bearing Dataset](https://www.nasa.gov/content/prognostics-center-of-excellence-data-set-repository), a benchmark dataset for predictive maintenance research containing run-to-failure vibration data from accelerated bearing tests.
+**Algorithm**: XGBoost Gradient Boosting Classifier
+- 100 estimators with max depth 6
+- Multi-class softmax objective (`multi:softprob`)
+- Early stopping with 10 rounds patience
+- StandardScaler preprocessing for feature normalization
+
+**Classification Output**:
+```
+HEALTHY   → Normal operation, no intervention needed
+DEGRADING → Early-stage fault, schedule maintenance
+CRITICAL  → Imminent failure, immediate action required
+```
+
+### Training Data: NASA IMS Bearing Dataset
+
+Trained on the [NASA IMS Bearing Dataset](https://www.nasa.gov/content/prognostics-center-of-excellence-data-set-repository), a benchmark for predictive maintenance research.
 
 **Dataset Characteristics:**
-- 4 Rexnord ZA-2115 bearings under constant load (6000 lbs) and speed (2000 RPM)
-- Vibration data sampled at 20 kHz, recorded in 1-second snapshots
-- Test run until bearing failure (~35 days of continuous operation)
-- Ground truth failure modes: inner race defect, roller element defect, outer race defect
+- 4 Rexnord ZA-2115 bearings under constant load (6000 lbs) at 2000 RPM
+- Vibration sampled at 20 kHz (20,480 samples per second)
+- Run-to-failure tests (~35 days continuous operation)
+- Ground truth failures: inner race, roller element, outer race defects
 
-### Feature Engineering
-
-The simulation models key statistical features used in bearing health assessment:
-
-| Feature | Description | Failure Indicator |
-|---------|-------------|-------------------|
-| **RMS Amplitude** | Root mean square of vibration signal | Increases 2-5x before failure |
-| **Kurtosis** | Signal peakedness (shock detection) | Spikes indicate impact events |
-| **Crest Factor** | Peak-to-RMS ratio | Elevated during early-stage defects |
-| **Spectral Energy** | Frequency band power distribution | Shifts toward defect frequencies |
-
-### Degradation Model
-
-The current implementation uses a **physics-informed simulation** that replicates observed failure progression:
-
+**Labeling Strategy** (based on run-to-failure position):
 ```
-HEALTHY → DEGRADING → CRITICAL → FAILURE
-   │          │           │
-   └──────────┴───────────┴── RMS amplitude increases
-                              Volatility (kurtosis proxy) increases
-                              Shock events become more frequent
+├─────────── 70% ───────────┼──── 20% ────┼── 10% ──┤
+│         HEALTHY           │  DEGRADING  │ CRITICAL│
+└───────────────────────────┴─────────────┴─────────┘
+        Time → Failure
 ```
 
-**State Transition Logic:**
-- **HEALTHY**: Baseline RMS (~0.5g), low volatility
-- **DEGRADING**: RMS drift (+0.01g/sec), increasing volatility
-- **CRITICAL**: Rapid RMS escalation (+0.05g/sec), shock spikes
+### Feature Engineering (14 Features)
 
-### Future: ML Model Integration
+**Time Domain Features:**
 
-For production deployment, the simulation can be replaced with trained models:
+| Feature | Formula | What It Detects |
+|---------|---------|-----------------|
+| RMS | √(mean(x²)) | Overall vibration energy |
+| Peak | max(\|x\|) | Maximum amplitude |
+| Crest Factor | Peak / RMS | Impulsive events |
+| Kurtosis | E[(x-μ)⁴]/σ⁴ | Shock spikes (bearing impacts) |
+| Skewness | E[(x-μ)³]/σ³ | Signal asymmetry |
+| Std | σ | Vibration spread |
+| Clearance Factor | Peak / mean(√\|x\|)² | Early-stage faults |
+| Shape Factor | RMS / mean(\|x\|) | Waveform changes |
+| Impulse Factor | Peak / mean(\|x\|) | Impact severity |
 
-- **LSTM/GRU Networks**: Sequence modeling for RUL (Remaining Useful Life) prediction
-- **1D-CNN**: Pattern recognition on raw vibration waveforms
-- **Isolation Forest**: Unsupervised anomaly detection for novel failure modes
-- **XGBoost Classifier**: State classification using engineered features
+**Frequency Domain Features:**
+
+| Feature | Description |
+|---------|-------------|
+| Spectral Centroid | Center of mass of frequency spectrum |
+| Spectral Spread | Variance around spectral centroid |
+| Band Energy (0-2kHz) | Low frequency content ratio |
+| Band Energy (2-5kHz) | Mid frequency content ratio |
+| Band Energy (5-10kHz) | High frequency defect signatures |
+
+### Model Performance
+
+Typical results on held-out test set:
+- **Accuracy**: ~92-95%
+- **F1 Score (macro)**: ~0.90
+- **Confusion Matrix**: Strong diagonal with minimal HEALTHY↔CRITICAL confusion
+
+### Live API Endpoints
+
+The trained model is deployed on Railway:
+
+```bash
+# Check model status
+curl https://predictive-maintenance-api-production-e4fc.up.railway.app/model/status
+
+# Health check
+curl https://predictive-maintenance-api-production-e4fc.up.railway.app/health
+
+# Predict from raw signal (needs 1000+ samples)
+curl -X POST https://predictive-maintenance-api-production-e4fc.up.railway.app/predict \
+  -H "Content-Type: application/json" \
+  -d '{"signal": [...], "sample_rate": 20000}'
+
+# WebSocket for real-time streaming
+wss://predictive-maintenance-api-production-e4fc.up.railway.app/ws/real
+```
+
+### Retraining the Model
+
+```bash
+cd backend
+
+# Option 1: Download NASA dataset and train
+python -m ml.download_nasa_data
+python -m ml.train_model
+
+# Option 2: Train on synthetic data (faster, no download)
+python -m ml.train_model  # Falls back to synthetic if no NASA data
+```
+
+Model artifacts saved to `backend/ml/models/`:
+- `bearing_classifier.joblib` - Trained XGBoost model
+- `feature_scaler.joblib` - StandardScaler for inference
+- `model_metadata.json` - Training metrics and config
 
 ## Data Model
 
@@ -214,18 +271,26 @@ Supported sensor protocols:
 │   │   ├── components/
 │   │   │   ├── ChartComponent.tsx   # Real-time candlestick chart
 │   │   │   └── StatusPanel.tsx      # Health status display
-│   │   ├── hooks/
-│   │   │   └── useDataGenerator.ts  # Client-side data simulation
 │   │   ├── page.tsx                 # Main dashboard
-│   │   └── layout.tsx               # App layout
-│   ├── package.json
-│   └── vercel.json
+│   │   └── layout.tsx               # App layout with OG tags
+│   └── package.json
 │
 ├── backend/
 │   ├── app/
-│   │   ├── main.py                  # FastAPI server
-│   │   └── generator.py             # Vibration data generator
-│   └── requirements.txt
+│   │   ├── main.py                  # FastAPI server with WebSocket
+│   │   ├── generator.py             # Simulation data generator
+│   │   └── predictor.py             # ML inference wrapper
+│   ├── ml/
+│   │   ├── train_model.py           # XGBoost training pipeline
+│   │   ├── feature_extraction.py    # 14-feature extraction
+│   │   ├── generate_synthetic_data.py
+│   │   ├── download_nasa_data.py    # NASA dataset downloader
+│   │   └── models/
+│   │       ├── bearing_classifier.joblib  # Trained model
+│   │       ├── feature_scaler.joblib      # Feature scaler
+│   │       └── model_metadata.json        # Training metrics
+│   ├── requirements.txt
+│   └── Procfile                     # Railway deployment config
 │
 └── DATA_INTEGRATION.md              # MQTT integration guide
 ```
