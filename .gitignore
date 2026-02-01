@@ -40,3 +40,5 @@ backend/ml/data/processed/*.npy
 
 # Keep trained models (small, needed for inference)
 !backend/ml/models/
+.vercel
+.env*.local

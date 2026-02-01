@@ -1,0 +1,7 @@
+backend/
+venv/
+*.pyc
+__pycache__/
+.git/
+node_modules/
+.next/

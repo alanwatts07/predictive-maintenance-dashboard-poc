@@ -6,7 +6,9 @@ A real-time bearing health monitoring dashboard that visualizes equipment degrad
 
 ## Live Demo
 
-[View Live Demo](https://frontend-two-ashy-yla6dtp7w4.vercel.app)
+**Frontend Dashboard:** [frontend-two-ashy-yla6dtp7w4.vercel.app](https://frontend-two-ashy-yla6dtp7w4.vercel.app)
+
+**ML Backend API:** [predictive-maintenance-api-production-e4fc.up.railway.app](https://predictive-maintenance-api-production-e4fc.up.railway.app/health)
 
 ## Features
 

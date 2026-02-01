@@ -21,9 +21,9 @@ interface ChartComponentProps {
   onStateChange?: (setState: (state: SimulationState) => void) => void;
 }
 
-// Check if we have a backend URL configured
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://predictive-maintenance-api-production-e4fc.up.railway.app';
-const USE_WEBSOCKET = BACKEND_URL.length > 0;
+// Backend URL for ML predictions
+const BACKEND_URL = 'https://predictive-maintenance-api-production-e4fc.up.railway.app';
+const USE_WEBSOCKET = true;
 
 export const ChartComponent: React.FC<ChartComponentProps> = ({ onDataUpdate, onStateChange }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
