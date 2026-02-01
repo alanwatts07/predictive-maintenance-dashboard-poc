@@ -6,7 +6,7 @@ import { Activity, AlertTriangle, CheckCircle, Zap } from "lucide-react";
 import { useState, useCallback, useRef } from "react";
 
 // Check if we have a backend URL configured
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || '';
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://predictive-maintenance-api-production-e4fc.up.railway.app';
 const USE_WEBSOCKET = BACKEND_URL.length > 0;
 
 export default function Home() {
